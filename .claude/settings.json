@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git branch *)",
+      "Bash(uv run pytest)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run ruff *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)"
+    ],
+    "ask": [
+      "Bash(docker *)",
+      "Bash(git push *)",
+      "Bash(uv add *)",
+      "Bash(gh pr create *)",
+      "Bash(gh issue create *)",
+      "Bash(gh api *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(gh pr merge *)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Read(./.env*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)"
+    ]
+  }
+}
