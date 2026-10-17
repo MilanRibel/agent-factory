@@ -1,17 +1,42 @@
 [project]
 name = "agent-factory"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local, containerised agent factory for autonomous ML engineering"
 readme = "README.md"
 authors = [
     { name = "Milan Ribel", email = "99722389+MilanRibel@users.noreply.github.com" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
 agent-factory = "agent_factory:main"
 
 [build-system]
-requires = ["uv_build>=0.9.18,<0.10.0"]
+requires = ["uv_build>=0.10.12,<0.11.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright[nodejs]==1.1.414",
+    "pytest==9.1.1",
+    "ruff==0.17.1",
+]
+
+[tool.ruff]
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pyright]
+pythonVersion = "3.12"
+strict = ["src", "scripts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers"]
