@@ -127,3 +127,8 @@ jobs:
         run: |
           "${RUNNER_TEMP}/actionlint/actionlint" -verbose \
             -shellcheck "${RUNNER_TEMP}/shellcheck/shellcheck" -pyflakes=
+      # DO NOT MERGE: canary for #5. actionlint must report the undefined step
+      # (expression) and shellcheck the unquoted $HOME (SC2086).
+      - name: Canary
+        if: steps.missing.outcome == 'success'
+        run: echo $HOME
