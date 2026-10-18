@@ -1,6 +1,6 @@
 name: CI
 
-# No paths/paths-ignore filters: lint and test are required checks and must run on every PR.
+# No paths/paths-ignore filters: lint, test and secret-scan are required checks and must run on every PR.
 on:
   pull_request:
   push:
@@ -12,6 +12,13 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  # gitleaks linux_x64 release tarball, pinned by version and sha256. The hash is the
+  # entry in the release's checksums.txt, cross-checked against the GitHub asset
+  # digest and a sha256 of the downloaded tarball (see the PR for issue #4).
+  GITLEAKS_VERSION: "8.30.1"
+  GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
 
 jobs:
   lint:
@@ -41,5 +48,38 @@ jobs:
         with:
           version: "0.10.12"
           enable-cache: false
+      # tests/test_secret_scan.py runs gitleaks and fails in CI when it is missing.
+      - name: Install gitleaks
+        run: |
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL --proto '=https' --proto-redir '=https' -o "${RUNNER_TEMP}/${tarball}" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  ${RUNNER_TEMP}/${tarball}" | sha256sum --check --strict
+          mkdir "${RUNNER_TEMP}/gitleaks"
+          tar -xzf "${RUNNER_TEMP}/${tarball}" -C "${RUNNER_TEMP}/gitleaks" gitleaks
+          "${RUNNER_TEMP}/gitleaks/gitleaks" version
+          echo "${RUNNER_TEMP}/gitleaks" >> "${GITHUB_PATH}"
       - run: uv sync --locked
       - run: uv run pytest
+
+  secret-scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history: a secret added and removed again within one PR still fails.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install gitleaks
+        run: |
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL --proto '=https' --proto-redir '=https' -o "${RUNNER_TEMP}/${tarball}" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  ${RUNNER_TEMP}/${tarball}" | sha256sum --check --strict
+          mkdir "${RUNNER_TEMP}/gitleaks"
+          tar -xzf "${RUNNER_TEMP}/${tarball}" -C "${RUNNER_TEMP}/gitleaks" gitleaks
+          "${RUNNER_TEMP}/gitleaks/gitleaks" version
+          echo "${RUNNER_TEMP}/gitleaks" >> "${GITHUB_PATH}"
+      # --ignore-gitleaks-allow: an inline gitleaks:allow comment cannot silence a finding.
+      - run: gitleaks git --redact --verbose --no-banner --ignore-gitleaks-allow .
