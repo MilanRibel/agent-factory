@@ -32,6 +32,7 @@
       "Bash(gh pr merge *)",
       "Bash(git push --force*)",
       "Bash(git push * --force*)",
+      "Bash(*set-rulesets.sh*--apply*)",
       "Read(./.env*)",
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)"
