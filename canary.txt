@@ -1,2 +1,0 @@
-# FAKE canary for #4, not a credential
-fake_api_key = "GFBHDgTgV7FJbBC5LvhgL72Ncrs9rwN2Rs4dSRj3"
