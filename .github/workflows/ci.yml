@@ -19,6 +19,16 @@ env:
   # digest and a sha256 of the downloaded tarball (see the PR for issue #4).
   GITLEAKS_VERSION: "8.30.1"
   GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+  # actionlint linux_amd64 release tarball, pinned by version and sha256. The hash is
+  # the entry in the release's checksums.txt, cross-checked against the GitHub asset
+  # digest and a sha256 of the downloaded tarball (see the PR for issue #5).
+  ACTIONLINT_VERSION: "1.7.12"
+  ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+  # shellcheck linux x86_64 release tarball, pinned by version and sha256. The release
+  # has no checksums file: the hash is the GitHub asset digest, cross-checked against a
+  # sha256 of the downloaded tarball (see the PR for issue #5).
+  SHELLCHECK_VERSION: "0.11.0"
+  SHELLCHECK_SHA256: "b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6"
 
 jobs:
   lint:
@@ -83,3 +93,37 @@ jobs:
           echo "${RUNNER_TEMP}/gitleaks" >> "${GITHUB_PATH}"
       # --ignore-gitleaks-allow: an inline gitleaks:allow comment cannot silence a finding.
       - run: gitleaks git --redact --verbose --no-banner --ignore-gitleaks-allow .
+
+  workflow-lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install actionlint
+        run: |
+          tarball="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL --proto '=https' --proto-redir '=https' -o "${RUNNER_TEMP}/${tarball}" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/${tarball}"
+          echo "${ACTIONLINT_SHA256}  ${RUNNER_TEMP}/${tarball}" | sha256sum --check --strict
+          mkdir "${RUNNER_TEMP}/actionlint"
+          tar -xzf "${RUNNER_TEMP}/${tarball}" -C "${RUNNER_TEMP}/actionlint" actionlint
+          "${RUNNER_TEMP}/actionlint/actionlint" -version
+      - name: Install shellcheck
+        run: |
+          tarball="shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.gz"
+          curl -fsSL --proto '=https' --proto-redir '=https' -o "${RUNNER_TEMP}/${tarball}" \
+            "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/${tarball}"
+          echo "${SHELLCHECK_SHA256}  ${RUNNER_TEMP}/${tarball}" | sha256sum --check --strict
+          mkdir "${RUNNER_TEMP}/shellcheck"
+          tar -xzf "${RUNNER_TEMP}/${tarball}" -C "${RUNNER_TEMP}/shellcheck" --strip-components=1 \
+            "shellcheck-v${SHELLCHECK_VERSION}/shellcheck"
+          "${RUNNER_TEMP}/shellcheck/shellcheck" --version
+      # actionlint silently skips shellcheck when the -shellcheck path does not exist,
+      # so the path is the one the install step ran. -pyflakes= keeps the result
+      # independent of whatever pyflakes the runner image ships.
+      - name: Run actionlint
+        run: |
+          "${RUNNER_TEMP}/actionlint/actionlint" -verbose \
+            -shellcheck "${RUNNER_TEMP}/shellcheck/shellcheck" -pyflakes=
