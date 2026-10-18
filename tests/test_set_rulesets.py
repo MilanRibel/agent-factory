@@ -5,7 +5,8 @@ scratch: a fake gh (tests/fake_gh.py) first on PATH, no tokens, and CLAUDECODE o
 when a test sets it, because pytest inherits CLAUDECODE=1 inside Claude Code.
 --apply only ever runs against the fake gh, with --repo example-owner/example-repo.
 The ruleset checks pin down the rules from issue #6, and the drift check ties the
-required status checks to the job names in the workflow files.
+required status checks to the job names in the workflow files. The deny rule for
+--apply in .claude/settings.json is checked in tests/test_claude_settings.py.
 """
 
 import copy
@@ -26,8 +27,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = REPO_ROOT / "scripts" / "set-rulesets.sh"
 FAKE_GH = REPO_ROOT / "tests" / "fake_gh.py"
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
-SETTINGS = REPO_ROOT / ".claude" / "settings.json"
-DENY_APPLY = "Bash(*set-rulesets.sh*--apply*)"
 RULESET_NAME = "protect-main"
 TEST_REPO = "example-owner/example-repo"
 RULESETS = f"repos/{TEST_REPO}/rulesets"
@@ -452,26 +451,3 @@ def test_apply_refuses_duplicate_names(gh_dir: Path) -> None:
     assert result.returncode != 0
     assert call_endpoints(gh_dir) == [("GET", LISTING)]
     assert stored_rulesets(gh_dir) == duplicates
-
-
-# #7 folds this into the full settings policy test.
-def settings_problems(settings: dict[str, Any]) -> list[str]:
-    deny = settings.get("permissions", {}).get("deny", [])
-    return [] if DENY_APPLY in deny else [f"deny rule {DENY_APPLY}"]
-
-
-def load_settings() -> dict[str, Any]:
-    return json.loads(SETTINGS.read_text())
-
-
-def test_settings_deny_apply() -> None:
-    assert settings_problems(load_settings()) == []
-
-
-def test_check_reports_missing_deny_rule() -> None:
-    settings = load_settings()
-    deny = settings["permissions"]["deny"]
-    settings["permissions"]["deny"] = [rule for rule in deny if rule != DENY_APPLY]
-
-    assert settings != load_settings()  # the mutation really removed something
-    assert settings_problems(settings) == [f"deny rule {DENY_APPLY}"]
