@@ -1,6 +1,22 @@
 # agent-factory
 Local, containerised agent factory for autonomous ML engineering
 
+## Working with Claude Code
+Start Claude Code in Manual (`default`) or plan mode; without the flag, a terminal
+session starts in `auto` in Claude Code 2.1.303:
+
+```sh
+claude --permission-mode default
+claude --permission-mode plan
+```
+
+Never switch to `acceptEdits` or `auto`; Shift+Tab cycles through both, so stop only
+on Manual or plan. Answer each permission prompt with `Yes` or `No` for that one
+call; never pick an option that accepts edits automatically, doesn't ask again or
+switches to auto mode. The ask rules in `.claude/settings.json` cover only the
+`Edit` tool, so in `acceptEdits` a Bash command can change a protected file without
+asking you. The full rules are in [AGENTS.md](AGENTS.md#permission-mode).
+
 ## Branch protection
 `scripts/set-rulesets.sh` protects the default branch (`main`) with the GitHub
 ruleset `protect-main`:

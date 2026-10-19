@@ -36,6 +36,7 @@
       "Edit(/.gitleaks/**)",
       "Edit(/tests/protected_paths.py)",
       "Edit(/tests/fake_gh.py)",
+      "Edit(/tests/test_agents_md.py)",
       "Edit(/tests/test_claude_settings.py)",
       "Edit(/tests/test_codeowners.py)",
       "Edit(/tests/test_pr_template.py)",
