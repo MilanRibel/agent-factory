@@ -1,0 +1,31 @@
+# Code owners for every protected path in AGENTS.md, in the same order, plus
+# /eval/ from docs/spec.md. tests/test_codeowners.py checks that each protected
+# path in AGENTS.md has a line here.
+#
+# The protect-main ruleset does not require code-owner review until phase 4, when
+# the implementer and the reviewer get separate GitHub identities
+# (scripts/set-rulesets.sh sets require_code_owner_review to false). Until then
+# this file records ownership; it does not block a merge.
+
+/docs/adr/ @MilanRibel
+/.github/ @MilanRibel
+/images/**/Dockerfile @MilanRibel
+/uv.lock @MilanRibel
+/AGENTS.md @MilanRibel
+/CLAUDE.md @MilanRibel
+/.claude/ @MilanRibel
+/scripts/set-rulesets.sh @MilanRibel
+/.gitleaks.toml @MilanRibel
+/.gitleaksignore @MilanRibel
+/.gitleaks/ @MilanRibel
+/tests/protected_paths.py @MilanRibel
+/tests/fake_gh.py @MilanRibel
+/tests/test_claude_settings.py @MilanRibel
+/tests/test_codeowners.py @MilanRibel
+/tests/test_pr_template.py @MilanRibel
+/tests/test_secret_scan.py @MilanRibel
+/tests/test_set_rulesets.py @MilanRibel
+/tests/test_workflow_lint.py @MilanRibel
+/tests/test_workflow_policy.py @MilanRibel
+/tests/test_workflow_triggers.py @MilanRibel
+/eval/ @MilanRibel

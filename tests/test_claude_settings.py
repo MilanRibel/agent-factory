@@ -3,7 +3,8 @@
 The whole policy for .claude/settings.json sits in this file:
 - every rule in MUST_DENY_BASH and MUST_DENY_READ is a deny rule;
 - every rule in MUST_ASK_OR_DENY is an ask or a deny rule;
-- every protected path has its `Edit` ask rule;
+- every protected path in AGENTS.md (tests/protected_paths.py) has its `Edit` ask
+  rule;
 - no allow rule allows every command, covers a sample command of a rule above,
   or lets a file-editing tool overlap a protected path;
 - `defaultMode` is never `bypassPermissions`;
@@ -26,6 +27,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import pytest
+from protected_paths import protected_paths
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SETTINGS = REPO_ROOT / ".claude" / "settings.json"
@@ -64,18 +66,8 @@ MUST_ASK_OR_DENY: dict[str, tuple[str, ...]] = {
 }
 SAMPLE_COMMANDS = {**MUST_DENY_BASH, **MUST_ASK_OR_DENY}
 
-# Protected paths, written as in AGENTS.md: a directory ends with "/".
-# #8 takes this list from AGENTS.md.
-PROTECTED_PATHS = (
-    "AGENTS.md",
-    "CLAUDE.md",
-    ".claude/",
-    ".github/",
-    "docs/adr/",
-    "uv.lock",
-    "scripts/set-rulesets.sh",
-    "images/**/Dockerfile",
-)
+# Protected paths from AGENTS.md, written as there: a directory ends with "/".
+PROTECTED_PATHS = protected_paths()
 # Built-in tools that write files. Path checks consult Edit rules only, but an
 # allow rule for any of these tools is held to the same check.
 FILE_EDIT_TOOLS = ("Edit", "Write", "MultiEdit", "NotebookEdit")
@@ -275,6 +267,10 @@ MUTATIONS: dict[str, tuple[Mutation, list[str]]] = {
     "AGENTS.md ask rule dropped": (
         move("Edit(/AGENTS.md)", "ask", None),
         ["no ask rule Edit(/AGENTS.md) for protected path AGENTS.md"],
+    ),
+    ".gitleaksignore ask rule dropped": (
+        move("Edit(/.gitleaksignore)", "ask", None),
+        ["no ask rule Edit(/.gitleaksignore) for protected path .gitleaksignore"],
     ),
     ".github edit rule added to allow": (
         move("Edit(/.github/**)", None, "allow"),
