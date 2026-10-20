@@ -29,9 +29,9 @@ CODEOWNERS = REPO_ROOT / ".github" / "CODEOWNERS"
 # A pattern followed by one or more owners: a user (@name) or a team (@org/team).
 ENTRY = re.compile(r"(\S+)(?:\s+@[\w-]+(?:/[\w.-]+)?)+")
 
-# The protected paths before #8, the ones #8 adds and the ones #26, #10, #11 and #9
-# add. An issue that removes a protected path from AGENTS.md updates this pin on
-# purpose.
+# The protected paths before #8, the ones #8 adds and the ones #26, #10, #11, #9
+# and #30 add. An issue that removes a protected path from AGENTS.md updates this
+# pin on purpose.
 PINNED_PATHS = (
     "docs/adr/",
     ".github/",
@@ -61,6 +61,9 @@ PINNED_PATHS = (
     "tests/test_workflow_lint.py",
     "tests/test_workflow_policy.py",
     "tests/test_workflow_triggers.py",
+    # Tool config and the test that proves it is active.
+    "pyproject.toml",
+    "tests/test_tooling.py",
 )
 
 UV_LOCK_ENTRY = "/uv.lock @MilanRibel"
@@ -213,11 +216,13 @@ def test_check_reports_codeowners_mutation(name: str) -> None:
 def test_check_reports_protected_path_without_entry() -> None:
     agents_md = AGENTS_MD.read_text()
     paths = parse_protected_paths(
-        with_paths(agents_md, [*parse_protected_paths(agents_md), "pyproject.toml"])
+        with_paths(
+            agents_md, [*parse_protected_paths(agents_md), "example/unprotected.txt"]
+        )
     )
 
     assert codeowners_problems(CODEOWNERS.read_text(), paths) == [
-        "no CODEOWNERS entry for protected path pyproject.toml"
+        "no CODEOWNERS entry for protected path example/unprotected.txt"
     ]
     assert pin_problems(paths) == []  # an added path passes the pin
 
