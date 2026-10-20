@@ -25,6 +25,7 @@
 /tests/test_claude_settings.py @MilanRibel
 /tests/test_codeowners.py @MilanRibel
 /tests/test_pr_template.py @MilanRibel
+/tests/test_pre_commit_config.py @MilanRibel
 /tests/test_secret_scan.py @MilanRibel
 /tests/test_set_rulesets.py @MilanRibel
 /tests/test_threat_model.py @MilanRibel

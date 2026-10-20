@@ -41,6 +41,7 @@
       "Edit(/tests/test_claude_settings.py)",
       "Edit(/tests/test_codeowners.py)",
       "Edit(/tests/test_pr_template.py)",
+      "Edit(/tests/test_pre_commit_config.py)",
       "Edit(/tests/test_secret_scan.py)",
       "Edit(/tests/test_set_rulesets.py)",
       "Edit(/tests/test_threat_model.py)",
