@@ -1,6 +1,6 @@
 # ADR-002: Deterministic orchestrator
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-20
 
 ## Context
