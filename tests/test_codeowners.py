@@ -29,8 +29,8 @@ CODEOWNERS = REPO_ROOT / ".github" / "CODEOWNERS"
 # A pattern followed by one or more owners: a user (@name) or a team (@org/team).
 ENTRY = re.compile(r"(\S+)(?:\s+@[\w-]+(?:/[\w.-]+)?)+")
 
-# The protected paths before #8, the ones #8 adds and the ones #26 and #10 add. An
-# issue that removes a protected path from AGENTS.md updates this pin on purpose.
+# The protected paths before #8, the ones #8 adds and the ones #26, #10 and #11 add.
+# An issue that removes a protected path from AGENTS.md updates this pin on purpose.
 PINNED_PATHS = (
     "docs/adr/",
     ".github/",
@@ -55,6 +55,7 @@ PINNED_PATHS = (
     "tests/test_pr_template.py",
     "tests/test_secret_scan.py",
     "tests/test_set_rulesets.py",
+    "tests/test_threat_model.py",
     "tests/test_workflow_lint.py",
     "tests/test_workflow_policy.py",
     "tests/test_workflow_triggers.py",
