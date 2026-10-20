@@ -29,6 +29,7 @@
       "Edit(/.github/**)",
       "Edit(/docs/adr/**)",
       "Edit(/uv.lock)",
+      "Edit(/pyproject.toml)",
       "Edit(/scripts/set-rulesets.sh)",
       "Edit(/images/**/Dockerfile)",
       "Edit(/.gitleaks.toml)",
@@ -45,6 +46,7 @@
       "Edit(/tests/test_secret_scan.py)",
       "Edit(/tests/test_set_rulesets.py)",
       "Edit(/tests/test_threat_model.py)",
+      "Edit(/tests/test_tooling.py)",
       "Edit(/tests/test_workflow_lint.py)",
       "Edit(/tests/test_workflow_policy.py)",
       "Edit(/tests/test_workflow_triggers.py)"

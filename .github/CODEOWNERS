@@ -11,6 +11,7 @@
 /.github/ @MilanRibel
 /images/**/Dockerfile @MilanRibel
 /uv.lock @MilanRibel
+/pyproject.toml @MilanRibel
 /AGENTS.md @MilanRibel
 /CLAUDE.md @MilanRibel
 /.claude/ @MilanRibel
@@ -29,6 +30,7 @@
 /tests/test_secret_scan.py @MilanRibel
 /tests/test_set_rulesets.py @MilanRibel
 /tests/test_threat_model.py @MilanRibel
+/tests/test_tooling.py @MilanRibel
 /tests/test_workflow_lint.py @MilanRibel
 /tests/test_workflow_policy.py @MilanRibel
 /tests/test_workflow_triggers.py @MilanRibel
