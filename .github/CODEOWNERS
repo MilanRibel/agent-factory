@@ -27,6 +27,7 @@
 /tests/test_pr_template.py @MilanRibel
 /tests/test_secret_scan.py @MilanRibel
 /tests/test_set_rulesets.py @MilanRibel
+/tests/test_threat_model.py @MilanRibel
 /tests/test_workflow_lint.py @MilanRibel
 /tests/test_workflow_policy.py @MilanRibel
 /tests/test_workflow_triggers.py @MilanRibel
