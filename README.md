@@ -17,6 +17,20 @@ switches to auto mode. The ask rules in `.claude/settings.json` cover only the
 `Edit` tool, so in `acceptEdits` a Bash command can change a protected file without
 asking you. The full rules are in [AGENTS.md](AGENTS.md#permission-mode).
 
+## Pre-commit hooks
+`.pre-commit-config.yaml` runs ruff (check and format), gitleaks and a few file
+checks before each commit. Install the hooks once per checkout:
+
+```sh
+uv run pre-commit install
+uv run pre-commit run --all-files   # optional: check every file now
+```
+
+The hooks are a convenience: they run only where someone installed them, and
+`git commit --no-verify` skips them. CI is the gate. The gitleaks hook builds
+gitleaks from source on the pinned rev, so it needs Go on `PATH`. The first run
+fetches the hook repositories from GitHub and their packages from PyPI.
+
 ## Branch protection
 `scripts/set-rulesets.sh` protects the default branch (`main`) with the GitHub
 ruleset `protect-main`:
