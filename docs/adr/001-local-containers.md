@@ -1,6 +1,6 @@
 # ADR-001: Local containers
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-20
 
 ## Context
