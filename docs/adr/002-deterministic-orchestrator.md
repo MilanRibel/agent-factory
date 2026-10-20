@@ -10,7 +10,7 @@ JobSpec -> run_container(), and tracks work and runs (`docs/spec.md`). It needs 
 form, a place to run and a store for its state. The forces:
 
 - LLM output must never decide a state transition: prompt injection could then
-  steer the factory (`docs/threat-model.md`).
+  steer the factory (T-024 in `docs/threat-model.md`).
 - No container may hold a Docker socket (`docs/spec.md`, AGENTS.md). A process
   that runs natively on the host starts containers without one.
 - A single process needs no separate service.
@@ -38,6 +38,8 @@ Negative:
   and gets only the GitHub permissions the orchestrator needs; no threat row
   covers the permissions yet.
 - It stops when the laptop sleeps.
+- It needs Docker Desktop to be running (ADR-001); the native process uses the
+  Docker socket on the host, and no container gets one.
 
 ## Alternatives considered
 
