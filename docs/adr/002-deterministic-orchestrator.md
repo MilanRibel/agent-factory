@@ -26,10 +26,9 @@ in WAL mode, and uses GitHub as the source of truth for work and outcomes.
 
 Positive:
 
-- Predictable and testable: the same state and input give the same transition.
-- Cheap: the orchestrator makes no LLM calls and needs no separate service.
-- The smallest attack surface of the options below: no LLM to inject into, no
-  Docker socket in a container and no extra service.
+- Predictable and testable.
+- Cheap.
+- The smallest attack surface.
 
 Negative:
 
