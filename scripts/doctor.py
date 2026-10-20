@@ -1,4 +1,4 @@
-"""Check whether this laptop is ready to run the factory: uv and Docker.
+"""Check whether this laptop is ready to run the factory: uv, Docker, gh and Keychain.
 
 Run it with `uv run scripts/doctor.py`. Each check prints one line with its
 measured and required value; the exit code is 0 only when every check passes.
@@ -6,6 +6,11 @@ measured and required value; the exit code is 0 only when every check passes.
 doctor reports only the two numbers it parses from `docker info` and never
 echoes command output: a command that exits non-zero shows only its exit code,
 and output that is not valid JSON shows only "invalid output".
+
+For `gh auth status` and `security find-generic-password` only the exit code
+counts. Their output is captured but never parsed, shown or logged, and neither
+runs with a flag that prints a secret (`--show-token`, `-w`, `-g`) or with
+`--json`, which makes gh exit 0 even when authentication fails.
 """
 
 import argparse
@@ -23,6 +28,9 @@ TIMEOUT_SECONDS = 10
 
 UV_VERSION = ("uv", "--version")
 DOCKER_INFO = ("docker", "info", "--format", "{{json .}}")
+GH_HOST = "github.com"
+GH_AUTH_STATUS = ("gh", "auth", "status", "--hostname", GH_HOST)
+DEFAULT_KEYCHAIN_SERVICE = "agent-factory-claude-oauth"
 
 Runner = Callable[[Sequence[str]], subprocess.CompletedProcess[str]]
 
@@ -39,7 +47,8 @@ def run_command(argv: Sequence[str]) -> subprocess.CompletedProcess[str]:
 
     This is the only place where doctor starts a process.
     """
-    # argv is one of the fixed tuples above, never user input, and no shell is involved.
+    # argv is a fixed tuple; only the Keychain service comes from a flag, as one
+    # argument. No shell is involved.
     return subprocess.run(  # noqa: S603
         list(argv),
         stdin=subprocess.DEVNULL,
@@ -144,6 +153,33 @@ def check_docker(
     return [daemon, memory_check, cpus_check]
 
 
+def check_gh(runner: Runner) -> CheckResult:
+    stdout, actual = attempt(runner, GH_AUTH_STATUS, "gh auth status")
+    return CheckResult(
+        "gh auth",
+        stdout is not None,
+        f"{actual}; required: {' '.join(GH_AUTH_STATUS)} exits 0",
+    )
+
+
+def check_keychain(runner: Runner, service: str) -> CheckResult:
+    """Check that the Keychain item exists; its value is never requested."""
+    argv = ("security", "find-generic-password", "-s", service)
+    stdout, actual = attempt(runner, argv, "security find-generic-password")
+    return CheckResult(
+        "keychain item",
+        stdout is not None,
+        f"{actual}; required: {' '.join(argv)} exits 0",
+    )
+
+
+def keychain_service(value: str) -> str:
+    """Reject a service name that security could read as a flag, such as -w."""
+    if value.startswith("-"):
+        raise argparse.ArgumentTypeError(f"must not start with '-': {value!r}")
+    return value
+
+
 def main(argv: Sequence[str] | None = None, runner: Runner = run_command) -> int:
     parser = argparse.ArgumentParser(
         description="Check whether this laptop is ready to run the factory."
@@ -160,11 +196,19 @@ def main(argv: Sequence[str] | None = None, runner: Runner = run_command) -> int
         default=DEFAULT_MIN_CPUS,
         help="minimum Docker VM CPUs (default: %(default)s)",
     )
+    parser.add_argument(
+        "--keychain-service",
+        type=keychain_service,
+        default=DEFAULT_KEYCHAIN_SERVICE,
+        help="Keychain service name of the Claude OAuth item (default: %(default)s)",
+    )
     args = parser.parse_args(argv)
 
     results = [
         check_uv(runner),
         *check_docker(runner, args.min_memory_gib, args.min_cpus),
+        check_gh(runner),
+        check_keychain(runner, args.keychain_service),
     ]
     for result in results:
         print(f"{'PASS' if result.ok else 'FAIL'}  {result.name}: {result.detail}")
