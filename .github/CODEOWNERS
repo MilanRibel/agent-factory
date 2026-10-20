@@ -20,6 +20,7 @@
 /.gitleaks/ @MilanRibel
 /tests/protected_paths.py @MilanRibel
 /tests/fake_gh.py @MilanRibel
+/tests/test_adr_format.py @MilanRibel
 /tests/test_agents_md.py @MilanRibel
 /tests/test_claude_settings.py @MilanRibel
 /tests/test_codeowners.py @MilanRibel
