@@ -29,9 +29,9 @@ CODEOWNERS = REPO_ROOT / ".github" / "CODEOWNERS"
 # A pattern followed by one or more owners: a user (@name) or a team (@org/team).
 ENTRY = re.compile(r"(\S+)(?:\s+@[\w-]+(?:/[\w.-]+)?)+")
 
-# The protected paths before #8, the ones #8 adds and the ones #26, #10, #11, #9
-# and #30 add. An issue that removes a protected path from AGENTS.md updates this
-# pin on purpose.
+# The protected paths before #8, the ones #8 adds and the ones #26, #10, #11, #9,
+# #30 and #31 add. An issue that removes a protected path from AGENTS.md updates
+# this pin on purpose.
 PINNED_PATHS = (
     "docs/adr/",
     ".github/",
@@ -61,9 +61,10 @@ PINNED_PATHS = (
     "tests/test_workflow_lint.py",
     "tests/test_workflow_policy.py",
     "tests/test_workflow_triggers.py",
-    # Tool config and the test that proves it is active.
+    # Tool config and the tests that guard it.
     "pyproject.toml",
     "tests/test_tooling.py",
+    "tests/test_tool_config_overrides.py",
 )
 
 UV_LOCK_ENTRY = "/uv.lock @MilanRibel"

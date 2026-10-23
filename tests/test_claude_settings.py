@@ -62,6 +62,9 @@ MUST_ASK_OR_DENY: dict[str, tuple[str, ...]] = {
     "Bash(gh issue create *)": ("gh issue create --title example",),
     "Bash(gh api *)": ("gh api user",),
     "Bash(uv add *)": ("uv add requests",),
+    "Bash(uv remove *)": ("uv remove requests",),
+    "Bash(uv version *)": ("uv version 0.2.0", "uv version --bump patch"),
+    "Bash(uv init *)": ("uv init", "uv init sub"),
     "Bash(docker *)": ("docker run --rm alpine",),
 }
 SAMPLE_COMMANDS = {**MUST_DENY_BASH, **MUST_ASK_OR_DENY}
@@ -264,6 +267,18 @@ MUTATIONS: dict[str, tuple[Mutation, list[str]]] = {
         move("Bash(docker *)", "ask", None),
         ["no ask or deny rule Bash(docker *)"],
     ),
+    "uv remove ask dropped": (
+        move("Bash(uv remove *)", "ask", None),
+        ["no ask or deny rule Bash(uv remove *)"],
+    ),
+    "uv version ask dropped": (
+        move("Bash(uv version *)", "ask", None),
+        ["no ask or deny rule Bash(uv version *)"],
+    ),
+    "uv init ask dropped": (
+        move("Bash(uv init *)", "ask", None),
+        ["no ask or deny rule Bash(uv init *)"],
+    ),
     "AGENTS.md ask rule dropped": (
         move("Edit(/AGENTS.md)", "ask", None),
         ["no ask rule Edit(/AGENTS.md) for protected path AGENTS.md"],
@@ -313,6 +328,12 @@ ALLOW_RULES: dict[str, list[str]] = {
         "allow rule Bash(gh pr *) covers Bash(gh pr create *)",
     ],
     "Bash(docker *)": ["allow rule Bash(docker *) covers Bash(docker *)"],
+    "Bash(uv *)": [
+        "allow rule Bash(uv *) covers Bash(uv add *)",
+        "allow rule Bash(uv *) covers Bash(uv remove *)",
+        "allow rule Bash(uv *) covers Bash(uv version *)",
+        "allow rule Bash(uv *) covers Bash(uv init *)",
+    ],
     "Bash(sudo:*)": ["allow rule Bash(sudo:*) covers Bash(sudo *)"],
     "Edit(/src/**)": [],
     "Edit(/README.md)": [],
