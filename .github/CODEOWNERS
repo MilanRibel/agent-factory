@@ -30,6 +30,7 @@
 /tests/test_secret_scan.py @MilanRibel
 /tests/test_set_rulesets.py @MilanRibel
 /tests/test_threat_model.py @MilanRibel
+/tests/test_tool_config_overrides.py @MilanRibel
 /tests/test_tooling.py @MilanRibel
 /tests/test_workflow_lint.py @MilanRibel
 /tests/test_workflow_policy.py @MilanRibel
